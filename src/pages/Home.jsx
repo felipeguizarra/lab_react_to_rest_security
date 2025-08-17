@@ -1,19 +1,18 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import useApi from "../hooks/useApi"; // supondo que o hook esteja aqui
-
+import useApi from "../hooks/useApi"; // hook
 export default function Home() {
   const { get } = useApi();
-  const [mensagem, setMensagem] = useState("");
+  const [usuarios, setUsuarios] = useState([]); //lista json
 
   useEffect(() => {
     get("/users")
       .then(res => {
-        setMensagem(res.data); // guarda a string retornada pelo backend
+        setUsuarios(res.data); // guarda a string retornada pelo backend
       })
       .catch(err => {
         console.error(err);
-        setMensagem("Erro ao buscar dados.");
+        setUsuarios([]);
       });
   }, [get]);
 
@@ -27,27 +26,28 @@ export default function Home() {
       textAlign: "center",
       backgroundColor: "#f5f5f5"
     }}>
-      <h1>Bem-vindo ao Sistema</h1>
-      <p>Este é um laboratório para cadastro e consulta .</p>
+      <h1>Usuários cadastrados</h1>
+      <p>Lista</p>      
 
-      <h2>Resposta do servidor:</h2>
-      <p>{mensagem}</p>
-
-       {/* Exibe o token */}
-      <div style={{
-          marginTop: "20px",
-          padding: "10px",
-          backgroundColor: "#fff",
-          border: "1px solid #ccc",
-          borderRadius: "5px",
-          width: "80%",
-          maxWidth: "600px",
-          wordWrap: "break-word",
-          fontSize: "0.9em"
+      {usuarios.length === 0 ? (
+        <p> Sem usuários para listar </p>
+      ) : ( 
+      <ul style={{ listStyle: "none", padding: 0 }}>
+        {usuarios.map(user => (
+          <li key={user.id} style={{
+            backgroundColor: "#fff",
+            margin: "10px 0",
+            padding: "10px",
+            borderRadius: "5px",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
         }}>
-    
-        
-      </div>
+            <p><strong>ID:</strong> {user.id}</p>
+            <p><strong>Nome:</strong> {user.name}</p>
+            <p><strong>Username:</strong> {user.username}</p>
+          </li>
+          ))}
+      </ul>
+      )}
 
       <Link
         to="/form"
